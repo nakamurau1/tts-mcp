@@ -11,6 +11,24 @@ const path = require("path");
 // 一時ファイル作成と削除をPromise化
 const tmpFile = promisify(tmp.file);
 
+// ログファイルパス
+const logFile = path.join(process.cwd(), 'tts-mcp.log');
+
+/**
+ * ログファイルにメッセージを追加します
+ * @param {string} message - ログメッセージ
+ */
+async function logToFile(message) {
+  const timestamp = new Date().toISOString();
+  const logMessage = `${timestamp} - ${message}\n`;
+  
+  try {
+    await fs.appendFile(logFile, logMessage);
+  } catch (error) {
+    // ログ書き込みエラーは無視（エラー処理のループを避けるため）
+  }
+}
+
 /**
  * OpenAI APIのクライアントを初期化します
  * @param {string} apiKey - OpenAI APIキー
@@ -35,7 +53,7 @@ async function textToSpeechAndPlay(options) {
   const client = initializeClient(options.apiKey);
   
   try {
-    console.log('音声生成開始...');
+    await logToFile('音声生成開始...');
     
     const response = await client.audio.speech.create({
       model: options.model,
@@ -55,7 +73,7 @@ async function textToSpeechAndPlay(options) {
     // 再生開始時間を記録
     const startTime = Date.now();
     
-    console.log(`音声を再生します: ${tempFilePath}`);
+    await logToFile(`音声を再生します: ${tempFilePath}`);
     
     // 音声を再生（Promise化）
     await new Promise((resolve, reject) => {
@@ -68,7 +86,7 @@ async function textToSpeechAndPlay(options) {
     // 再生時間を計算（秒単位）
     const duration = ((Date.now() - startTime) / 1000).toFixed(1);
     
-    console.log(`音声の再生が完了しました（再生時間: ${duration}秒）`);
+    await logToFile(`音声の再生が完了しました（再生時間: ${duration}秒）`);
     
     return {
       duration,
@@ -76,9 +94,9 @@ async function textToSpeechAndPlay(options) {
     };
   } catch (error) {
     if (error.response) {
-      console.error('API エラー:', error.response.data);
+      await logToFile(`API エラー: ${JSON.stringify(error.response.data)}`);
     } else {
-      console.error('エラー:', error.message);
+      await logToFile(`エラー: ${error.message}`);
     }
     throw error;
   }
@@ -90,10 +108,19 @@ async function textToSpeechAndPlay(options) {
  * @returns {Promise<McpServer>} 設定済みMCPサーバー
  */
 async function createMcpServer(config) {
+  // ログファイルを初期化
+  await logToFile('---------------------------------------');
+  await logToFile(`MCPサーバーを初期化しています...`);
+  await logToFile(`設定: モデル=${config.model}, 音声=${config.voice}, フォーマット=${config.format}`);
+
   // MCPサーバーを作成
   const server = new McpServer({
     name: "tts-mcp",
     version: "1.0.0",
+    // サポートする機能を明示的に定義
+    capabilities: {
+      tools: {}
+    }
   });
 
   // テキスト音声変換と再生ツールを追加
@@ -151,19 +178,26 @@ async function createMcpServer(config) {
  * @returns {Promise<void>}
  */
 async function startMcpServer(config) {
-  // サーバーを作成
-  const server = await createMcpServer(config);
-  
-  // STDIOトランスポートを使用
-  const transport = new StdioServerTransport();
-  
-  console.log("MCPサーバーを起動しています...");
-  console.log(`設定: モデル=${config.model}, 音声=${config.voice}, フォーマット=${config.format}`);
-  
-  // サーバーを接続して開始
-  await server.connect(transport);
-  
-  console.log("MCPサーバーが起動しました");
+  // stderr経由でコンテキスト情報を出力
+  process.stderr.write(`モデル=${config.model}, 音声=${config.voice}, フォーマット=${config.format}\n`);
+
+  try {
+    // サーバーを作成
+    const server = await createMcpServer(config);
+    
+    // STDIOトランスポートを使用
+    const transport = new StdioServerTransport();
+    
+    // サーバーを接続して開始
+    await server.connect(transport);
+    
+    await logToFile("MCPサーバーが起動しました");
+  } catch (error) {
+    await logToFile(`MCPサーバー起動エラー: ${error.message}`);
+    // stderrにもエラーを出力
+    process.stderr.write(`エラー: ${error.message}\n`);
+    throw error;
+  }
 }
 
 module.exports = {

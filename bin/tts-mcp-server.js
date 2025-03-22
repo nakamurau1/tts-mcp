@@ -6,6 +6,13 @@ require('dotenv').config();
 const { program } = require('commander');
 const { startMcpServer } = require('../src/mcp-server');
 const packageJson = require('../package.json');
+const fs = require('fs').promises;
+const path = require('path');
+
+// stderrのみに出力する関数（stdoutはMCP通信用に残す）
+function log(message) {
+  process.stderr.write(`${message}\n`);
+}
 
 // コマンドラインオプションの設定
 program
@@ -17,6 +24,7 @@ program
   .option('-v, --voice <voice>', '音声キャラクター', 'alloy')
   .option('-f, --format <format>', '音声フォーマット', 'mp3')
   .option('--api-key <key>', 'OpenAI APIキー（環境変数OPENAI_API_KEYでも設定可能）')
+  .option('--log-file <path>', 'ログファイルパス', path.join(process.cwd(), 'tts-mcp.log'))
   
   .addHelpText('after', `
 例:
@@ -34,6 +42,12 @@ program
   mp3, opus, aac, flac, wav, pcm
   `);
 
+// エラーによる終了時にメッセージを表示
+process.on('uncaughtException', (error) => {
+  log(`致命的なエラー: ${error.message}`);
+  process.exit(1);
+});
+
 // コマンドラインオプションの解析
 program.parse(process.argv);
 
@@ -43,7 +57,7 @@ const options = program.opts();
 // OpenAI APIキーを環境変数からも取得
 const apiKey = options.apiKey || process.env.OPENAI_API_KEY;
 if (!apiKey) {
-  console.error('エラー: OpenAI APIキーが設定されていません。--api-keyオプションか環境変数OPENAI_API_KEYを設定してください。');
+  log('エラー: OpenAI APIキーが設定されていません。--api-keyオプションか環境変数OPENAI_API_KEYを設定してください。');
   process.exit(1);
 }
 
@@ -52,11 +66,12 @@ const serverConfig = {
   model: options.model,
   voice: options.voice,
   format: options.format,
-  apiKey: apiKey
+  apiKey: apiKey,
+  logFile: options.logFile
 };
 
 // MCPサーバー起動
 startMcpServer(serverConfig).catch(error => {
-  console.error('MCPサーバー起動エラー:', error);
+  log(`MCPサーバー起動エラー: ${error.message}`);
   process.exit(1);
 });
