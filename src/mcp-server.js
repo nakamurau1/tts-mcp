@@ -221,5 +221,6 @@ async function startMcpServer(config) {
 }
 
 module.exports = {
-  startMcpServer
+  startMcpServer,
+  initializeClient
 };

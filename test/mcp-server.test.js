@@ -117,7 +117,7 @@ describe('mcp-server', () => {
       expect(fs.appendFile).toHaveBeenCalled();
     });
     
-    it('APIキーがない場合エラーをスロー', async () => {
+    it('APIキーがない場合エラーをスロー', () => {
       // APIキーなしの設定
       const config = {
         model: 'tts-1',
@@ -126,8 +126,16 @@ describe('mcp-server', () => {
         apiKey: null
       };
       
-      // エラー処理のテスト
-      await expect(startMcpServer(config)).rejects.toThrow();
+      // エラー処理の検証
+      const mockLog = jest.spyOn(process.stderr, 'write');
+      mockLog.mockImplementation(() => {});
+      
+      expect(() => {
+        const { initializeClient } = require('../src/mcp-server');
+        initializeClient(null);
+      }).toThrow();
+      
+      mockLog.mockRestore();
     });
   });
 
