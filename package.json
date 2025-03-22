@@ -1,27 +1,34 @@
 {
   "name": "tts-mcp",
   "version": "1.0.0",
-  "description": "OpenAI Text to Speech APIを活用したコマンドラインツール",
+  "description": "OpenAI Text to Speech APIを活用したコマンドラインツールとMCPサーバー",
   "main": "src/index.js",
   "bin": {
-    "tts-mcp": "./bin/tts-mcp.js"
+    "tts-mcp": "./bin/tts-mcp.js",
+    "tts-mcp-server": "./bin/tts-mcp-server.js"
   },
   "scripts": {
     "start": "node bin/tts-mcp.js",
+    "server": "node bin/tts-mcp-server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
     "openai",
     "tts",
     "text-to-speech",
-    "cli"
+    "cli",
+    "mcp"
   ],
   "author": "",
   "license": "MIT",
   "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.7.0",
     "commander": "^11.1.0",
     "dotenv": "^16.3.1",
-    "openai": "^4.20.0"
+    "openai": "^4.20.0",
+    "play-sound": "^1.1.5",
+    "tmp": "^0.2.1",
+    "zod": "^3.22.4"
   },
   "engines": {
     "node": ">=16.0.0"
