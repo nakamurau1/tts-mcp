@@ -3,16 +3,9 @@ const { StdioServerTransport } = require("@modelcontextprotocol/sdk/server/stdio
 const { OpenAI } = require("openai");
 const z = require("zod");
 const fs = require("fs").promises;
-const fsSync = require("fs");  // 同期的なfsモジュールも追加
-const player = require("play-sound")({});
-const tmp = require("tmp");
-const { promisify } = require("util");
 const path = require("path");
-
-// 一時ファイル作成と削除をPromise化
-const tmpFile = promisify(tmp.file);
-// ファイル書き込み関数をPromise化
-const writeFile = promisify(fsSync.write);
+const os = require("os");  // 一時ディレクトリのパスを取得するために使用
+const player = require("play-sound")({});
 
 // ログファイルパス
 const logFile = path.join(process.cwd(), 'tts-mcp.log');
@@ -54,6 +47,7 @@ function initializeClient(apiKey) {
  */
 async function textToSpeechAndPlay(options) {
   const client = initializeClient(options.apiKey);
+  let tempFilePath = null;
   
   try {
     await logToFile('音声生成開始...');
@@ -67,16 +61,16 @@ async function textToSpeechAndPlay(options) {
       ...(options.instructions ? { instructions: options.instructions } : {})
     });
 
+    // 音声データを取得
     const buffer = Buffer.from(await response.arrayBuffer());
     
-    // 一時ファイルを作成
-    const { path: tempFilePath, fd } = await tmpFile({ postfix: `.${options.format}` });
+    // 直接一時ファイルパスを生成
+    tempFilePath = path.join(os.tmpdir(), `speech_${Date.now()}.${options.format}`);
     
-    // バッファをファイルに書き込む (Promise化した書き込み関数を使用)
-    await writeFile(fd, buffer, 0, buffer.length, 0);
+    // バッファをファイルに書き込む
+    await fs.writeFile(tempFilePath, buffer);
     
-    // ファイルディスクリプタを閉じる
-    fsSync.closeSync(fd);
+    await logToFile(`音声ファイルを作成しました: ${tempFilePath}`);
     
     // 再生開始時間を記録
     const startTime = Date.now();
@@ -96,11 +90,29 @@ async function textToSpeechAndPlay(options) {
     
     await logToFile(`音声の再生が完了しました（再生時間: ${duration}秒）`);
     
+    // 一時ファイルの削除を試みる（任意）
+    try {
+      await fs.unlink(tempFilePath);
+      await logToFile(`一時ファイルを削除しました: ${tempFilePath}`);
+    } catch (cleanupError) {
+      await logToFile(`一時ファイルの削除に失敗しました: ${cleanupError.message}`);
+      // 削除に失敗しても処理は続行
+    }
+    
     return {
       duration,
       textLength: options.text.length
     };
   } catch (error) {
+    // エラーが発生した場合、一時ファイルが存在していれば削除を試みる
+    if (tempFilePath) {
+      try {
+        await fs.unlink(tempFilePath);
+      } catch (cleanupError) {
+        // 削除エラーは無視
+      }
+    }
+    
     if (error.response) {
       await logToFile(`API エラー: ${JSON.stringify(error.response.data)}`);
     } else {
