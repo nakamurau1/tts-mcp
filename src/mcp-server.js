@@ -3,6 +3,7 @@ const { StdioServerTransport } = require("@modelcontextprotocol/sdk/server/stdio
 const { OpenAI } = require("openai");
 const z = require("zod");
 const fs = require("fs").promises;
+const fsSync = require("fs");  // 同期的なfsモジュールも追加
 const player = require("play-sound")({});
 const tmp = require("tmp");
 const { promisify } = require("util");
@@ -10,6 +11,8 @@ const path = require("path");
 
 // 一時ファイル作成と削除をPromise化
 const tmpFile = promisify(tmp.file);
+// ファイル書き込み関数をPromise化
+const writeFile = promisify(fsSync.write);
 
 // ログファイルパス
 const logFile = path.join(process.cwd(), 'tts-mcp.log');
@@ -66,9 +69,14 @@ async function textToSpeechAndPlay(options) {
 
     const buffer = Buffer.from(await response.arrayBuffer());
     
-    // 一時ファイルを作成して音声データを書き込む
+    // 一時ファイルを作成
     const { path: tempFilePath, fd } = await tmpFile({ postfix: `.${options.format}` });
-    await fs.write(fd, buffer, 0, buffer.length, 0);
+    
+    // バッファをファイルに書き込む (Promise化した書き込み関数を使用)
+    await writeFile(fd, buffer, 0, buffer.length, 0);
+    
+    // ファイルディスクリプタを閉じる
+    fsSync.closeSync(fd);
     
     // 再生開始時間を記録
     const startTime = Date.now();
