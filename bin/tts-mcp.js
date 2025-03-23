@@ -4,7 +4,7 @@
 require('dotenv').config();
 
 const { program } = require('commander');
-const { run } = require('../src/index');
+const { run } = require('../dist/src/index');
 const packageJson = require('../package.json');
 
 // コマンドラインオプションの設定

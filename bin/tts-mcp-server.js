@@ -4,7 +4,7 @@
 require('dotenv').config();
 
 const { program } = require('commander');
-const { startMcpServer } = require('../src/mcp-server');
+const { startMcpServer } = require('../dist/src/mcp-server');
 const packageJson = require('../package.json');
 const fs = require('fs').promises;
 const path = require('path');
