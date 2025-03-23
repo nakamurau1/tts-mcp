@@ -2,12 +2,20 @@
   "name": "tts-mcp",
   "version": "1.0.0",
   "description": "OpenAI Text to Speech APIを活用したコマンドラインツールとMCPサーバー",
+  "publishConfig": {
+    "access": "public"
+  },
   "main": "dist/src/index.js",
   "types": "dist/src/index.d.ts",
   "bin": {
     "tts-mcp": "./dist/bin/tts-mcp.js",
     "tts-mcp-server": "./dist/bin/tts-mcp-server.js"
   },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
   "scripts": {
     "prebuild": "rimraf dist",
     "build": "tsc -p tsconfig.json",
@@ -19,7 +27,8 @@
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
     "clean": "rimraf dist",
-    "prepare": "npm run build"
+    "prepare": "npm run build",
+    "prepublishOnly": "npm run test && npm run build"
   },
   "keywords": [
     "openai",

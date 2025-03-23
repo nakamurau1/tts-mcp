@@ -12,16 +12,28 @@ A Model Context Protocol (MCP) server and command-line tool for high-quality tex
 
 ## Installation
 
+### 方法1: リポジトリからインストール
+
 ```bash
-# Clone the repository
+# リポジトリをクローン
 git clone https://github.com/nakamurau1/tts-mcp.git
 cd tts-mcp
 
-# Install dependencies
+# 依存関係をインストール
 npm install
 
-# Optional: Install globally
+# オプション: グローバルにインストール
 npm install -g .
+```
+
+### 方法2: npxで直接実行（インストール不要）
+
+```bash
+# MCPサーバーを直接起動
+npx tts-mcp-server --voice nova --model tts-1-hd
+
+# CLIツールを直接使用
+npx tts-mcp -t "こんにちは、世界" -o hello.mp3
 ```
 
 ## MCP Server Usage
@@ -66,6 +78,22 @@ The MCP server can be used with Claude Desktop and other MCP-compatible clients.
     "tts-mcp": {
       "command": "node",
       "args": ["full/path/to/bin/tts-mcp-server.js", "--voice", "nova", "--api-key", "your-openai-api-key"],
+      "env": {
+        "OPENAI_API_KEY": "your-openai-api-key"
+      }
+    }
+  }
+}
+```
+
+または、npxを使用してより簡単に設定することもできます：
+
+```json
+{
+  "mcpServers": {
+    "tts-mcp": {
+      "command": "npx",
+      "args": ["tts-mcp-server", "--voice", "nova", "--api-key", "your-openai-api-key"],
       "env": {
         "OPENAI_API_KEY": "your-openai-api-key"
       }
