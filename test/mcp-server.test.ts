@@ -100,7 +100,7 @@ describe('mcp-server', () => {
       // McpServerが正しく初期化されたか検証
       expect(McpServer).toHaveBeenCalledWith({
         name: "tts-mcp",
-        version: "1.0.0",
+        version: "1.1.0",
         capabilities: { tools: {} }
       });
       
