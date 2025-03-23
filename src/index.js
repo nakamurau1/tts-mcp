@@ -1,45 +1,41 @@
-const { textToSpeech } = require('./api');
-const { readTextFile, ensureOutputDirectory, validateOptions, getOutputPath } = require('./utils');
-
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.run = run;
+const api_1 = require("./api");
+const utils_1 = require("./utils");
 /**
  * メインのアプリケーションロジック
- * @param {Object} options - コマンドラインオプション
+ * @param {CommandLineOptions} options - コマンドラインオプション
  * @returns {Promise<void>}
  */
 async function run(options) {
-  try {
-    // オプションの検証
-    validateOptions(options);
-    
-    // 出力パスの取得
-    const outputPath = getOutputPath(options);
-    
-    // 出力ディレクトリの確認
-    await ensureOutputDirectory(outputPath);
-    
-    // テキストの取得（ファイルまたは直接入力）
-    let text = options.text;
-    if (options.file) {
-      text = await readTextFile(options.file);
+    try {
+        // オプションの検証
+        (0, utils_1.validateOptions)(options);
+        // 出力パスの取得
+        const outputPath = (0, utils_1.getOutputPath)(options);
+        // 出力ディレクトリの確認
+        await (0, utils_1.ensureOutputDirectory)(outputPath);
+        // テキストの取得（ファイルまたは直接入力）
+        let text = options.text || '';
+        if (options.file) {
+            text = await (0, utils_1.readTextFile)(options.file);
+        }
+        // テキストを音声に変換
+        await (0, api_1.textToSpeech)({
+            text,
+            outputPath,
+            model: options.model || 'tts-1',
+            voice: options.voice || 'alloy',
+            speed: options.speed || 1.0,
+            format: options.format || 'mp3',
+            instructions: options.instructions,
+            apiKey: options.apiKey || process.env.OPENAI_API_KEY || ''
+        });
+        console.log('処理が完了しました。');
     }
-    
-    // テキストを音声に変換
-    await textToSpeech({
-      text,
-      outputPath,
-      model: options.model,
-      voice: options.voice,
-      speed: options.speed,
-      format: options.format,
-      instructions: options.instructions,
-      apiKey: options.apiKey || process.env.OPENAI_API_KEY
-    });
-    
-    console.log('処理が完了しました。');
-  } catch (error) {
-    console.error('エラー:', error.message);
-    process.exit(1);
-  }
+    catch (error) {
+        console.error('エラー:', error.message);
+        process.exit(1);
+    }
 }
-
-module.exports = { run };

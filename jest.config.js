@@ -2,14 +2,23 @@ module.exports = {
   // テスト環境（Node.js環境で実行）
   testEnvironment: 'node',
   
+  // TypeScript対応
+  preset: 'ts-jest',
+  
   // テスト対象ファイルのパターン
-  testMatch: ['**/test/**/*.test.js'],
+  testMatch: ['**/test/**/*.test.ts'],
+  
+  // テスト綴扱から除外するディレクトリとファイル
+  modulePathIgnorePatterns: [
+    '<rootDir>/dist/'
+  ],
   
   // カバレッジレポートの設定
   collectCoverageFrom: [
-    'src/**/*.js',
+    'src/**/*.ts',
     '!**/node_modules/**',
-    '!**/vendor/**'
+    '!**/vendor/**',
+    '!**/*.d.ts'
   ],
   
   // モック対象のパス
@@ -27,5 +36,12 @@ module.exports = {
   coverageDirectory: 'coverage',
   
   // テスト前に実行するスクリプト
-  setupFiles: ['./test/setup.js']
+  setupFiles: ['./test/setup.ts'],
+  
+  // TypeScript設定
+  globals: {
+    'ts-jest': {
+      tsconfig: 'tsconfig.json'
+    }
+  }
 };

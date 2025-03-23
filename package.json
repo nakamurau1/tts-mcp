@@ -2,16 +2,24 @@
   "name": "tts-mcp",
   "version": "1.0.0",
   "description": "OpenAI Text to Speech APIを活用したコマンドラインツールとMCPサーバー",
-  "main": "src/index.js",
+  "main": "dist/src/index.js",
+  "types": "dist/src/index.d.ts",
   "bin": {
-    "tts-mcp": "./bin/tts-mcp.js",
-    "tts-mcp-server": "./bin/tts-mcp-server.js"
+    "tts-mcp": "./dist/bin/tts-mcp.js",
+    "tts-mcp-server": "./dist/bin/tts-mcp-server.js"
   },
   "scripts": {
-    "start": "node bin/tts-mcp.js",
-    "server": "node bin/tts-mcp-server.js",
-    "test": "jest",
-    "test:coverage": "jest --coverage"
+    "prebuild": "rimraf dist",
+    "build": "tsc -p tsconfig.json",
+    "start": "npm run build && node dist/bin/tts-mcp.js",
+    "server": "npm run build && node dist/bin/tts-mcp-server.js",
+    "dev:start": "ts-node bin/tts-mcp.ts",
+    "dev:server": "ts-node bin/tts-mcp-server.ts",
+    "test": "jest --config jest.config.js",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "clean": "rimraf dist",
+    "prepare": "npm run build"
   },
   "keywords": [
     "openai",
@@ -36,10 +44,21 @@
   },
   "devDependencies": {
     "@jest/globals": "^29.7.0",
+    "@types/jest": "^29.5.14",
+    "@types/mock-fs": "^4.13.4",
+    "@types/node": "^22.13.11",
+    "@types/play-sound": "^1.1.2",
+    "@types/sinon": "^17.0.4",
+    "@types/supertest": "^6.0.2",
+    "@types/tmp": "^0.2.6",
     "jest": "^29.7.0",
     "mock-fs": "^5.5.0",
     "nock": "^14.0.1",
+    "rimraf": "^6.0.1",
     "sinon": "^19.0.4",
-    "supertest": "^7.1.0"
+    "supertest": "^7.1.0",
+    "ts-jest": "^29.2.6",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.2"
   }
 }
