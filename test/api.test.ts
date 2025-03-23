@@ -1,7 +1,6 @@
 import { promises as fs } from 'fs';
-import nock from 'nock';
 import { OpenAI } from 'openai';
-import { TTSOptions, OpenAIVoice, OpenAIOutputFormat, OpenAITTSModel } from '../src/types';
+import { TTSOptions } from '../src/types';
 
 // モジュールをモック化
 jest.mock('openai');

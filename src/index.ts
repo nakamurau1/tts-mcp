@@ -1,6 +1,6 @@
 import { textToSpeech } from './api';
 import { readTextFile, ensureOutputDirectory, validateOptions, getOutputPath } from './utils';
-import { CommandLineOptions, OpenAIVoice, OpenAIOutputFormat, OpenAITTSModel } from './types';
+import { CommandLineOptions } from './types';
 
 /**
  * メインのアプリケーションロジック

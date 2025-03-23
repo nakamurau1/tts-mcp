@@ -5,7 +5,6 @@ import 'dotenv/config';
 import { Command } from 'commander';
 import { startMcpServer } from '../src/mcp-server';
 import packageJson from '../package.json';
-import { promises as fs } from 'fs';
 import path from 'path';
 import { MCPServerConfig } from '../src/types';
 

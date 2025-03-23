@@ -2,7 +2,6 @@ import sinon from 'sinon';
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import { promises as fs } from 'fs';
-import path from 'path';
 import { OpenAI } from 'openai';
 import { startMcpServer, initializeClient } from '../src/mcp-server';
 import { MCPServerConfig } from '../src/types';
