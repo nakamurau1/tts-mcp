@@ -1,13 +1,11 @@
 // 共通の型定義
 
-// OpenAI APIでサポートされている音声タイプ
-export type OpenAIVoice = 'alloy' | 'ash' | 'coral' | 'echo' | 'fable' | 'onyx' | 'nova' | 'sage' | 'shimmer';
+import { VALID_VOICES, VALID_MODELS, VALID_FORMATS } from './constants';
 
-// OpenAI APIでサポートされているフォーマット
-export type OpenAIOutputFormat = 'mp3' | 'opus' | 'aac' | 'flac' | 'wav' | 'pcm';
-
-// OpenAI APIでサポートされているモデル
-export type OpenAITTSModel = 'tts-1' | 'tts-1-hd' | 'gpt-4o-mini-tts';
+// 定数配列から型を生成
+export type OpenAIVoice = typeof VALID_VOICES[number];
+export type OpenAITTSModel = typeof VALID_MODELS[number];
+export type OpenAIOutputFormat = typeof VALID_FORMATS[number];
 
 /**
  * テキスト音声変換のオプション

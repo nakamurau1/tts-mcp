@@ -7,6 +7,7 @@ import path from "path";
 import os from "os";  // 一時ディレクトリのパスを取得するために使用
 import playSound from "play-sound";
 import { MCPServerConfig, OpenAIVoice, OpenAIOutputFormat, OpenAITTSModel } from "./types";
+import { validateVoice, validateModel, validateFormat } from "./utils";
 
 // プレイヤーの初期化
 const player = playSound({});
@@ -71,17 +72,17 @@ async function textToSpeechAndPlay(options: TTSPlayOptions): Promise<TTSPlayResu
   try {
     await logToFile('音声生成開始...');
     
-    // 型定義を活用して音声の有効性を確認
-    // 型が正確に定義されていることを前提としているため、実行時の安全対策としての確認
-    const validVoices: ReadonlyArray<OpenAIVoice> = ['alloy', 'ash', 'coral', 'echo', 'fable', 'onyx', 'nova', 'sage', 'shimmer'];
-    const safeVoice = validVoices.includes(options.voice as OpenAIVoice) ? options.voice : 'alloy';
+    // 入力の検証
+    const safeVoice = validateVoice(options.voice);
+    const safeModel = validateModel(options.model);
+    const safeFormat = validateFormat(options.format);
       
     const response = await client.audio.speech.create({
-      model: options.model,
+      model: safeModel,
       voice: safeVoice,
       input: options.text,
       speed: options.speed,
-      response_format: options.format,
+      response_format: safeFormat,
       ...(options.instructions ? { instructions: options.instructions } : {})
     });
 
@@ -89,7 +90,7 @@ async function textToSpeechAndPlay(options: TTSPlayOptions): Promise<TTSPlayResu
     const buffer = Buffer.from(await response.arrayBuffer());
     
     // 直接一時ファイルパスを生成
-    tempFilePath = path.join(os.tmpdir(), `speech_${Date.now()}.${options.format}`);
+    tempFilePath = path.join(os.tmpdir(), `speech_${Date.now()}.${safeFormat}`);
     
     // バッファをファイルに書き込む
     await fs.writeFile(tempFilePath, buffer);
@@ -244,12 +245,25 @@ async function createMcpServer(config: MCPServerConfig): Promise<McpServer> {
  * @returns {Promise<void>}
  */
 export async function startMcpServer(config: MCPServerConfig): Promise<void> {
+  // 入力値の検証
+  const safeModel = validateModel(config.model);
+  const safeVoice = validateVoice(config.voice);
+  const safeFormat = validateFormat(config.format);
+  
+  // 検証済みの値で設定を上書き
+  const validatedConfig: MCPServerConfig = {
+    ...config,
+    model: safeModel,
+    voice: safeVoice,
+    format: safeFormat
+  };
+
   // stderr経由でコンテキスト情報を出力
-  process.stderr.write(`モデル=${config.model}, 音声=${config.voice}, フォーマット=${config.format}\n`);
+  process.stderr.write(`モデル=${safeModel}, 音声=${safeVoice}, フォーマット=${safeFormat}\n`);
 
   try {
     // サーバーを作成
-    const server = await createMcpServer(config);
+    const server = await createMcpServer(validatedConfig);
     
     // STDIOトランスポートを使用
     const transport = new StdioServerTransport();

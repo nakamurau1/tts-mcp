@@ -1,6 +1,7 @@
 import { promises as fs } from 'fs';
 import path from 'path';
-import { CommandLineOptions } from './types';
+import { CommandLineOptions, OpenAIVoice, OpenAITTSModel, OpenAIOutputFormat } from './types';
+import { VALID_VOICES, VALID_MODELS, VALID_FORMATS, DEFAULT_VOICE, DEFAULT_MODEL, DEFAULT_FORMAT } from './constants';
 
 /**
  * テキストファイルを読み込みます
@@ -68,4 +69,31 @@ export function getOutputPath(options: CommandLineOptions): string {
   // 出力ファイル名がない場合はデフォルトのファイル名を生成
   const defaultFilename = `speech_${Date.now()}.${options.format || 'mp3'}`;
   return path.join(process.cwd(), 'output', defaultFilename);
+}
+
+/**
+ * 音声タイプの有効性を検証し、有効な値を返す
+ * @param {string} voice 検証する音声タイプ
+ * @returns {OpenAIVoice} 有効な音声タイプ（無効な場合はデフォルト値）
+ */
+export function validateVoice(voice: string): OpenAIVoice {
+  return VALID_VOICES.includes(voice as OpenAIVoice) ? (voice as OpenAIVoice) : DEFAULT_VOICE;
+}
+
+/**
+ * モデルの有効性を検証し、有効な値を返す
+ * @param {string} model 検証するモデル
+ * @returns {OpenAITTSModel} 有効なモデル（無効な場合はデフォルト値）
+ */
+export function validateModel(model: string): OpenAITTSModel {
+  return VALID_MODELS.includes(model as OpenAITTSModel) ? (model as OpenAITTSModel) : DEFAULT_MODEL;
+}
+
+/**
+ * 出力フォーマットの有効性を検証し、有効な値を返す
+ * @param {string} format 検証する出力フォーマット
+ * @returns {OpenAIOutputFormat} 有効な出力フォーマット（無効な場合はデフォルト値）
+ */
+export function validateFormat(format: string): OpenAIOutputFormat {
+  return VALID_FORMATS.includes(format as OpenAIOutputFormat) ? (format as OpenAIOutputFormat) : DEFAULT_FORMAT;
 }
