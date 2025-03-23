@@ -12,28 +12,28 @@ A Model Context Protocol (MCP) server and command-line tool for high-quality tex
 
 ## Installation
 
-### 方法1: リポジトリからインストール
+### Method 1: Install from Repository
 
 ```bash
-# リポジトリをクローン
+# Clone the repository
 git clone https://github.com/nakamurau1/tts-mcp.git
 cd tts-mcp
 
-# 依存関係をインストール
+# Install dependencies
 npm install
 
-# オプション: グローバルにインストール
+# Optional: Install globally
 npm install -g .
 ```
 
-### 方法2: npxで直接実行（インストール不要）
+### Method 2: Run Directly with npx (No Installation Required)
 
 ```bash
-# MCPサーバーを直接起動
-npx tts-mcp-server --voice nova --model tts-1-hd
+# Start the MCP server directly
+npx tts-mcp tts-mcp-server --voice nova --model tts-1-hd
 
-# CLIツールを直接使用
-npx tts-mcp -t "こんにちは、世界" -o hello.mp3
+# Use the CLI tool directly
+npx tts-mcp -t "Hello, world" -o hello.mp3
 ```
 
 ## MCP Server Usage
@@ -86,14 +86,14 @@ The MCP server can be used with Claude Desktop and other MCP-compatible clients.
 }
 ```
 
-または、npxを使用してより簡単に設定することもできます：
+Alternatively, you can use npx for easier setup:
 
 ```json
 {
   "mcpServers": {
     "tts-mcp": {
       "command": "npx",
-      "args": ["tts-mcp-server", "--voice", "nova", "--api-key", "your-openai-api-key"],
+      "args": ["-p", "tts-mcp", "tts-mcp-server", "--voice", "nova", "--model", "gpt-4o-mini-tts"],
       "env": {
         "OPENAI_API_KEY": "your-openai-api-key"
       }
@@ -163,9 +163,9 @@ The following voice characters are supported:
 
 ## Supported Models
 
-- gpt-4o-mini-tts (default)
+- tts-1
 - tts-1-hd
-- gpt-4o-mini-tts
+- gpt-4o-mini-tts (default)
 
 ## Output Formats
 

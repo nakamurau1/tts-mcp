@@ -1,6 +1,6 @@
-// 共通の定数
+// Common constants
 
-// サポートされる音声タイプの配列
+// Array of supported voice types
 export const VALID_VOICES = [
   'alloy',
   'ash',
@@ -13,14 +13,14 @@ export const VALID_VOICES = [
   'shimmer'
 ] as const;
 
-// サポートされるモデルの配列
+// Array of supported models
 export const VALID_MODELS = [
   'tts-1',
   'tts-1-hd',
   'gpt-4o-mini-tts'
 ] as const;
 
-// サポートされる出力フォーマットの配列
+// Array of supported output formats
 export const VALID_FORMATS = [
   'mp3',
   'opus',
@@ -30,7 +30,7 @@ export const VALID_FORMATS = [
   'pcm'
 ] as const;
 
-// デフォルト値
+// Default values
 export const DEFAULT_VOICE = 'alloy';
 export const DEFAULT_MODEL = 'gpt-4o-mini-tts';
 export const DEFAULT_FORMAT = 'mp3';

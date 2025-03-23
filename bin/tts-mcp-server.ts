@@ -18,28 +18,28 @@ function log(message: string): void {
 const program = new Command();
 program
   .name('tts-mcp-server')
-  .description('OpenAI Text to Speech MCPサーバー')
+  .description('OpenAI Text to Speech MCP Server')
   .version(packageJson.version)
   
-  .option('-m, --model <model>', '使用するモデル', 'gpt-4o-mini-tts' as const)
-  .option('-v, --voice <voice>', '音声キャラクター', 'alloy' as const)
-  .option('-f, --format <format>', '音声フォーマット', 'mp3' as const)
-  .option('--api-key <key>', 'OpenAI APIキー（環境変数OPENAI_API_KEYでも設定可能）')
-  .option('--log-file <path>', 'ログファイルパス', path.join(process.cwd(), 'tts-mcp.log'))
+  .option('-m, --model <model>', 'TTS model to use', 'gpt-4o-mini-tts' as const)
+  .option('-v, --voice <voice>', 'Voice character', 'alloy' as const)
+  .option('-f, --format <format>', 'Audio format', 'mp3' as const)
+  .option('--api-key <key>', 'OpenAI API key (can also be set via environment variable)')
+  .option('--log-file <path>', 'Log file path', path.join(process.cwd(), 'tts-mcp.log'))
   
   .addHelpText('after', `
-例:
+Examples:
   $ tts-mcp-server
   $ tts-mcp-server --model tts-1 --voice nova --format mp3
   $ tts-mcp-server --voice echo
 
-サポートされている音声:
+Supported voices:
   alloy, ash, coral, echo, fable, onyx, nova, sage, shimmer
 
-サポートされているモデル:
+Supported models:
   tts-1, tts-1-hd, gpt-4o-mini-tts
 
-サポートされているフォーマット:
+Supported formats:
   mp3, opus, aac, flac, wav, pcm
   `);
 
@@ -58,7 +58,7 @@ const options = program.opts();
 // OpenAI APIキーを環境変数からも取得
 const apiKey = options.apiKey || process.env.OPENAI_API_KEY;
 if (!apiKey) {
-  log('エラー: OpenAI APIキーが設定されていません。--api-keyオプションか環境変数OPENAI_API_KEYを設定してください。');
+  log('Error: OpenAI API key is not set. Please provide it using --api-key option or OPENAI_API_KEY environment variable.');
   process.exit(1);
 }
 
@@ -73,6 +73,6 @@ const serverConfig: MCPServerConfig = {
 
 // MCPサーバー起動
 startMcpServer(serverConfig).catch(error => {
-  log(`MCPサーバー起動エラー: ${error.message}`);
+  log(`MCP server startup error: ${error.message}`);
   process.exit(1);
 });
