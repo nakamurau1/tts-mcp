@@ -34,7 +34,7 @@ program
   $ tts-mcp-server --voice echo
 
 サポートされている音声:
-  alloy, ash, ballad, coral, echo, fable, onyx, nova, sage, shimmer, verse
+  alloy, ash, coral, echo, fable, onyx, nova, sage, shimmer
 
 サポートされているモデル:
   tts-1, tts-1-hd, gpt-4o-mini-tts

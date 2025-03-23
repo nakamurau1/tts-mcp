@@ -71,9 +71,10 @@ async function textToSpeechAndPlay(options: TTSPlayOptions): Promise<TTSPlayResu
   try {
     await logToFile('音声生成開始...');
     
-    // サポートされている音声を確認
-    const validVoices = ['alloy', 'ash', 'coral', 'echo', 'fable', 'onyx', 'nova', 'sage', 'shimmer'];
-    const safeVoice = validVoices.includes(options.voice) ? options.voice : 'alloy';
+    // 型定義を活用して音声の有効性を確認
+    // 型が正確に定義されていることを前提としているため、実行時の安全対策としての確認
+    const validVoices: ReadonlyArray<OpenAIVoice> = ['alloy', 'ash', 'coral', 'echo', 'fable', 'onyx', 'nova', 'sage', 'shimmer'];
+    const safeVoice = validVoices.includes(options.voice as OpenAIVoice) ? options.voice : 'alloy';
       
     const response = await client.audio.speech.create({
       model: options.model,

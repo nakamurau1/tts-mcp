@@ -3,9 +3,6 @@
 // OpenAI APIでサポートされている音声タイプ
 export type OpenAIVoice = 'alloy' | 'ash' | 'coral' | 'echo' | 'fable' | 'onyx' | 'nova' | 'sage' | 'shimmer';
 
-// READMEに記載されている追加の音声タイプ（OpenAI SDKがまだサポートしていない可能性あり）
-export type ExtendedOpenAIVoice = OpenAIVoice | 'ballad' | 'verse';
-
 // OpenAI APIでサポートされているフォーマット
 export type OpenAIOutputFormat = 'mp3' | 'opus' | 'aac' | 'flac' | 'wav' | 'pcm';
 
