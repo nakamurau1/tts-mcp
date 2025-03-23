@@ -1,117 +1,129 @@
 # tts-mcp
 
-OpenAI Text to Speech APIを活用した高品質音声生成コマンドラインツールとMCPサーバー
+A Model Context Protocol (MCP) server and command-line tool for high-quality text-to-speech generation using the OpenAI TTS API.
 
-## 機能
+## Main Features
 
-- テキスト文字列やファイルから自然な音声を生成
-- 複数の音声キャラクターや設定をサポート
-- 様々な出力フォーマット（MP3, WAV, OPUS, AACなど）
-- シンプルで使いやすいコマンドラインインターフェース
-- **NEW**: Model Context Protocol (MCP) サーバー対応
+- **MCP Server**: Integrate text-to-speech capabilities with Claude Desktop and other MCP-compatible clients
+- **Voice Options**: Support for multiple voice characters (alloy, nova, echo, etc.)
+- **High-Quality Audio**: Support for various output formats (MP3, WAV, OPUS, AAC)
+- **Customizable**: Configure speech speed, voice character, and additional instructions
+- **CLI Tool**: Also available as a command-line utility for direct text-to-speech conversion
 
-## インストール
+## Installation
 
 ```bash
-# リポジトリをクローン
+# Clone the repository
 git clone https://github.com/nakamurau1/tts-mcp.git
 cd tts-mcp
 
-# 依存関係をインストール
+# Install dependencies
 npm install
 
-# グローバルにインストール（オプション）
+# Optional: Install globally
 npm install -g .
 ```
 
-## 使い方
+## MCP Server Usage
 
-### コマンドラインツールとして
+The MCP server allows you to integrate text-to-speech functionality with Model Context Protocol (MCP) compatible clients like Claude Desktop.
 
-```bash
-# テキストを直接指定
-tts-mcp -t "こんにちは、世界" -o hello.mp3
-
-# テキストファイルを変換
-tts-mcp -f speech.txt -o speech.mp3
-
-# カスタム音声を指定
-tts-mcp -t "Welcome to the future" -o welcome.mp3 -v nova
-```
-
-### MCPサーバーとして
+### Starting the MCP Server
 
 ```bash
-# デフォルト設定でサーバーを起動
+# Start with default settings
 npm run server
 
-# カスタム設定でサーバーを起動
+# Start with custom settings
 npm run server -- --voice nova --model tts-1-hd
 
-# または直接実行
-node bin/tts-mcp-server.js --voice echo
+# Or directly with API key
+node bin/tts-mcp-server.js --voice echo --api-key your-openai-api-key
 ```
 
-## コマンドラインオプション
-
-### tts-mcp（コマンドラインツール）
+### MCP Server Options
 
 ```
-オプション:
-  -V, --version             バージョン情報表示
-  -t, --text <text>         変換するテキスト
-  -f, --file <path>         入力テキストファイルのパス
-  -o, --output <path>       出力音声ファイルのパス（必須）
-  -m, --model <n>           使用するモデル (デフォルト: "tts-1")
-  -v, --voice <n>           音声キャラクター (デフォルト: "alloy")
-  -s, --speed <number>      音声の速度（0.25-4.0） (デフォルト: 1)
-  --format <format>         出力フォーマット (デフォルト: "mp3")
-  -i, --instructions <text> 音声生成の追加指示
-  --api-key <key>           OpenAI APIキー（環境変数でも設定可能）
-  -h, --help                ヘルプ表示
+Options:
+  -V, --version       Display version information
+  -m, --model <model> TTS model to use (default: "tts-1")
+  -v, --voice <voice> Voice character (default: "alloy")
+  -f, --format <format> Audio format (default: "mp3")
+  --api-key <key>     OpenAI API key (can also be set via environment variable)
+  -h, --help          Display help information
 ```
 
-### tts-mcp-server（MCPサーバー）
+### Integrating with MCP Clients
 
-```
-オプション:
-  -V, --version             バージョン情報表示
-  -m, --model <model>       使用するモデル (デフォルト: "tts-1")
-  -v, --voice <voice>       音声キャラクター (デフォルト: "alloy")
-  -f, --format <format>     音声フォーマット (デフォルト: "mp3")
-  --api-key <key>           OpenAI APIキー（環境変数でも設定可能）
-  -h, --help                ヘルプ表示
-```
+The MCP server can be used with Claude Desktop and other MCP-compatible clients. For Claude Desktop integration:
 
-## MCP対応クライアントでの使用
-
-このMCPサーバーは、Claude DesktopなどのMCP対応クライアントで使用できます。例えば、Claude Desktopでは以下のように設定します：
-
-1. Claude Desktopの設定ファイル（通常は`~/Library/Application Support/Claude/claude_desktop_config.json`）を開きます
-2. 以下の設定を追加します：
+1. Open the Claude Desktop configuration file (typically at `~/Library/Application Support/Claude/claude_desktop_config.json`)
+2. Add the following configuration, including your OpenAI API key:
 
 ```json
 {
   "mcpServers": {
     "tts-mcp": {
       "command": "node",
-      "args": ["フルパス/bin/tts-mcp-server.js", "--voice", "nova"]
+      "args": ["full/path/to/bin/tts-mcp-server.js", "--voice", "nova", "--api-key", "your-openai-api-key"],
+      "env": {
+        "OPENAI_API_KEY": "your-openai-api-key"
+      }
     }
   }
 }
 ```
 
-3. Claude Desktopを再起動します
-4. 「テキストを読み上げてほしい」などとリクエストすると、テキストが音声で再生されます
+You can provide the API key in two ways:
 
-### MCPサーバーが提供するツール
+1. **Direct method** (recommended for testing): Include it in the `args` array using the `--api-key` parameter
+2. **Environment variable method** (more secure): Set it in the `env` object as shown above
 
-- **text-to-speech**: テキストを音声に変換して再生するツール
+> **Security Note**: Make sure to secure your configuration file when including API keys.
 
-## 音声キャラクター
+3. Restart Claude Desktop
+4. When you ask Claude to "read this text aloud" or similar requests, the text will be converted to speech
 
-以下の音声キャラクターがサポートされています：
-- alloy (デフォルト)
+### Available MCP Tools
+
+- **text-to-speech**: Tool for converting text to speech and playing it
+
+## CLI Tool Usage
+
+You can also use tts-mcp as a standalone command-line tool:
+
+```bash
+# Convert text directly
+tts-mcp -t "Hello, world" -o hello.mp3
+
+# Convert from a text file
+tts-mcp -f speech.txt -o speech.mp3
+
+# Specify custom voice
+tts-mcp -t "Welcome to the future" -o welcome.mp3 -v nova
+```
+
+### CLI Tool Options
+
+```
+Options:
+  -V, --version           Display version information
+  -t, --text <text>       Text to convert
+  -f, --file <path>       Path to input text file
+  -o, --output <path>     Path to output audio file (required)
+  -m, --model <n>         Model to use (default: "tts-1")
+  -v, --voice <n>         Voice character (default: "alloy")
+  -s, --speed <number>    Speech speed (0.25-4.0) (default: 1)
+  --format <format>       Output format (default: "mp3")
+  -i, --instructions <text> Additional instructions for speech generation
+  --api-key <key>         OpenAI API key (can also be set via environment variable)
+  -h, --help              Display help information
+```
+
+## Supported Voices
+
+The following voice characters are supported:
+- alloy (default)
 - ash
 - coral
 - echo
@@ -121,32 +133,30 @@ node bin/tts-mcp-server.js --voice echo
 - sage
 - shimmer
 
-**注意**: OpenAIのドキュメントにはさらに 'ballad' と 'verse' の音声が記載されていますが、現在のSDKではサポートされていません。
+## Supported Models
 
-## サポートされているモデル
-
-- tts-1 (デフォルト)
+- tts-1 (default)
 - tts-1-hd
 - gpt-4o-mini-tts
 
-## 出力フォーマット
+## Output Formats
 
-以下の出力フォーマットがサポートされています：
-- mp3 (デフォルト)
+The following output formats are supported:
+- mp3 (default)
 - opus
 - aac
 - flac
 - wav
 - pcm
 
-## 環境変数
+## Environment Variables
 
-`.env`ファイルまたは環境変数で以下の設定が可能です：
+You can also configure the tool using system environment variables:
 
 ```
 OPENAI_API_KEY=your-api-key-here
 ```
 
-## ライセンス
+## License
 
 MIT
