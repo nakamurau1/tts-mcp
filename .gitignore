@@ -1,5 +1,8 @@
 # Jest coverage
 coverage/
+
+# TypeScript build output
+dist/
 # Logs
 logs
 *.log
