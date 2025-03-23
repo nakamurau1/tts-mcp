@@ -175,7 +175,7 @@ async function createMcpServer(config: MCPServerConfig): Promise<McpServer> {
   // MCPサーバーを作成
   const server = new McpServer({
     name: "tts-mcp",
-    version: "1.0.0",
+    version: "1.1.0",
     // サポートする機能を明示的に定義
     capabilities: {
       tools: {}
