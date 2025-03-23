@@ -32,5 +32,5 @@ export const VALID_FORMATS = [
 
 // デフォルト値
 export const DEFAULT_VOICE = 'alloy';
-export const DEFAULT_MODEL = 'tts-1';
+export const DEFAULT_MODEL = 'gpt-4o-mini-tts';
 export const DEFAULT_FORMAT = 'mp3';

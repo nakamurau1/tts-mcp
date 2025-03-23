@@ -58,7 +58,7 @@ node bin/tts-mcp-server.js --voice echo --api-key your-openai-api-key
 ```
 Options:
   -V, --version       Display version information
-  -m, --model <model> TTS model to use (default: "tts-1")
+  -m, --model <model> TTS model to use (default: "gpt-4o-mini-tts")
   -v, --voice <voice> Voice character (default: "alloy")
   -f, --format <format> Audio format (default: "mp3")
   --api-key <key>     OpenAI API key (can also be set via environment variable)
@@ -139,7 +139,7 @@ Options:
   -t, --text <text>       Text to convert
   -f, --file <path>       Path to input text file
   -o, --output <path>     Path to output audio file (required)
-  -m, --model <n>         Model to use (default: "tts-1")
+  -m, --model <n>         Model to use (default: "gpt-4o-mini-tts")
   -v, --voice <n>         Voice character (default: "alloy")
   -s, --speed <number>    Speech speed (0.25-4.0) (default: 1)
   --format <format>       Output format (default: "mp3")
@@ -163,7 +163,7 @@ The following voice characters are supported:
 
 ## Supported Models
 
-- tts-1 (default)
+- gpt-4o-mini-tts (default)
 - tts-1-hd
 - gpt-4o-mini-tts
 

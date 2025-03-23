@@ -16,7 +16,7 @@ program
   .option('-t, --text <text>', 'テキスト入力')
   .option('-f, --file <path>', 'テキストファイルのパス')
   .option('-o, --output <path>', '出力音声ファイルのパス（指定しない場合はoutputディレクトリに生成）')
-  .option('-m, --model <n>', '使用するモデル', 'tts-1' as const)
+  .option('-m, --model <n>', '使用するモデル', 'gpt-4o-mini-tts' as const)
   .option('-v, --voice <n>', '音声キャラクター', 'alloy' as const)
   .option('-s, --speed <number>', '音声の速度（0.25-4.0）', parseFloat, 1.0)
   .option('--format <format>', '出力フォーマット', 'mp3' as const)

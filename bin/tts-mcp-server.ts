@@ -21,7 +21,7 @@ program
   .description('OpenAI Text to Speech MCPサーバー')
   .version(packageJson.version)
   
-  .option('-m, --model <model>', '使用するモデル', 'tts-1' as const)
+  .option('-m, --model <model>', '使用するモデル', 'gpt-4o-mini-tts' as const)
   .option('-v, --voice <voice>', '音声キャラクター', 'alloy' as const)
   .option('-f, --format <format>', '音声フォーマット', 'mp3' as const)
   .option('--api-key <key>', 'OpenAI APIキー（環境変数OPENAI_API_KEYでも設定可能）')

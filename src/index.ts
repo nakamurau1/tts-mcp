@@ -28,7 +28,7 @@ export async function run(options: CommandLineOptions): Promise<void> {
     await textToSpeech({
       text,
       outputPath,
-      model: options.model || 'tts-1',
+      model: options.model || 'gpt-4o-mini-tts',
       voice: options.voice || 'alloy',
       speed: options.speed || 1.0,
       format: options.format || 'mp3',
