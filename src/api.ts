@@ -28,10 +28,9 @@ export async function textToSpeech(options: TTSOptions): Promise<void> {
   try {
     console.log('音声生成開始...');
     
-    // ノバリッドボイスをサポートされている値に強制変換
-    const safeVoice = (options.voice as string in ['alloy', 'ash', 'coral', 'echo', 'fable', 'onyx', 'nova', 'sage', 'shimmer']) 
-      ? options.voice 
-      : 'alloy';
+    // サポートされている音声を確認
+    const validVoices = ['alloy', 'ash', 'coral', 'echo', 'fable', 'onyx', 'nova', 'sage', 'shimmer'];
+    const safeVoice = validVoices.includes(options.voice) ? options.voice : 'alloy';
       
     const response = await client.audio.speech.create({
       model: options.model,
@@ -52,11 +51,20 @@ export async function textToSpeech(options: TTSOptions): Promise<void> {
     
     console.log(`音声ファイルを生成しました: ${options.outputPath}`);
   } catch (error) {
+    // APIエラーをより詳細に表示
     if ((error as any).response) {
-      console.error('API エラー:', (error as any).response.data);
+      const apiError = (error as any).response.data;
+      console.error('OpenAI API エラー:');
+      console.error(`- ステータス: ${(error as any).response.status}`);
+      console.error(`- メッセージ: ${apiError.error?.message || 'エラー詳細なし'}`);
+      console.error(`- タイプ: ${apiError.error?.type || 'エラータイプなし'}`);
+      
+      // より詳細なエラー情報を構築して投げる
+      throw new Error(`OpenAI API エラー: ${apiError.error?.message || 'APIリクエストが失敗しました'}`);
     } else {
+      // 一般的なエラー
       console.error('エラー:', (error as Error).message);
+      throw error;
     }
-    throw error;
   }
 }

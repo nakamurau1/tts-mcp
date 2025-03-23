@@ -71,10 +71,9 @@ async function textToSpeechAndPlay(options: TTSPlayOptions): Promise<TTSPlayResu
   try {
     await logToFile('音声生成開始...');
     
-    // ノバリッドボイスをサポートされている値に強制変換
-    const safeVoice = (options.voice as string in ['alloy', 'ash', 'coral', 'echo', 'fable', 'onyx', 'nova', 'sage', 'shimmer']) 
-      ? options.voice 
-      : 'alloy';
+    // サポートされている音声を確認
+    const validVoices = ['alloy', 'ash', 'coral', 'echo', 'fable', 'onyx', 'nova', 'sage', 'shimmer'];
+    const safeVoice = validVoices.includes(options.voice) ? options.voice : 'alloy';
       
     const response = await client.audio.speech.create({
       model: options.model,
@@ -137,9 +136,18 @@ async function textToSpeechAndPlay(options: TTSPlayOptions): Promise<TTSPlayResu
       }
     }
     
+    // APIエラーをより詳細にログ記録
     if (error.response) {
-      await logToFile(`API エラー: ${JSON.stringify(error.response.data)}`);
+      const apiError = error.response.data;
+      await logToFile(`OpenAI API エラー:`);
+      await logToFile(`- ステータス: ${error.response.status}`);
+      await logToFile(`- メッセージ: ${apiError.error?.message || 'エラー詳細なし'}`);
+      await logToFile(`- タイプ: ${apiError.error?.type || 'エラータイプなし'}`);
+      
+      // 元のエラーもログに記録
+      await logToFile(`生のレスポンスデータ: ${JSON.stringify(error.response.data)}`);
     } else {
+      // 一般的なエラー
       await logToFile(`エラー: ${error.message}`);
     }
     throw error;
@@ -209,7 +217,15 @@ async function createMcpServer(config: MCPServerConfig): Promise<McpServer> {
           content: [
             {
               type: "text",
-              text: `エラー: 音声の生成または再生に失敗しました - ${(error as Error).message}`
+              text: `エラー: 音声の生成または再生に失敗しました`
+            },
+            {
+              type: "text",
+              text: `詳細: ${(error as Error).message}`
+            },
+            {
+              type: "text",
+              text: `対処方法: OpenAI APIキーの確認、テキスト内容の確認、または別のボイスやモデルの使用をお試しください。`
             }
           ],
           isError: true

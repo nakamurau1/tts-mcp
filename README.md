@@ -113,7 +113,6 @@ node bin/tts-mcp-server.js --voice echo
 以下の音声キャラクターがサポートされています：
 - alloy (デフォルト)
 - ash
-- ballad
 - coral
 - echo
 - fable
@@ -121,7 +120,8 @@ node bin/tts-mcp-server.js --voice echo
 - nova
 - sage
 - shimmer
-- verse
+
+**注意**: OpenAIのドキュメントにはさらに 'ballad' と 'verse' の音声が記載されていますが、現在のSDKではサポートされていません。
 
 ## サポートされているモデル
 
