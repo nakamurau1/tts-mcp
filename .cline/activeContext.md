@@ -4,6 +4,8 @@
 The current focus of the tts-mcp project is on maintaining a stable and reliable text-to-speech solution that works seamlessly both as a standalone CLI tool and as an MCP server integration for Claude Desktop and other MCP-compatible clients. Additionally, improving test coverage and integration testing is a priority to ensure robust functionality.
 
 ## Recent Changes
+- **Added descriptions to text-to-speech MCP tool and its parameters for better user experience**
+- **Enhanced MCP client tests to verify descriptions are properly transmitted**
 - Implementation of the MCP server functionality for Claude Desktop integration
 - Support for the latest OpenAI TTS models, including gpt-4o-mini-tts
 - Enhanced error handling and logging for better troubleshooting
@@ -29,6 +31,8 @@ The current focus of the tts-mcp project is on maintaining a stable and reliable
 - Both the CLI and MCP server interfaces are designed to be intuitive and easy to use
 - Default values are provided for all options to minimize required configuration
 - Clear error messages include suggested resolutions
+- **MCP tools include descriptive information for improved usability in Claude Desktop**
+- **Tool parameters have detailed descriptions to guide users on proper usage**
 
 ### Testing Strategy
 - **Unit tests for core components and utilities**

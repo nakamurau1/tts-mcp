@@ -24,6 +24,7 @@ The project is in a **production-ready state** with all core features implemente
 ### MCP Server ✅
 - [x] Full Model Context Protocol (MCP) implementation
 - [x] text-to-speech tool registration
+- [x] **Descriptive metadata for tools and parameters**
 - [x] Claude Desktop integration
 - [x] Real-time speech playback
 - [x] Temporary file management
@@ -69,6 +70,7 @@ The project is in a **production-ready state** with all core features implemente
 - [x] Basic usage documentation
 - [x] MCP server configuration guide
 - [x] **Test documentation and execution guide**
+- [x] **MCP tool and parameter descriptions in code**
 - [ ] Advanced configuration documentation
 - [ ] Troubleshooting guide
 - [ ] API reference documentation
@@ -76,6 +78,7 @@ The project is in a **production-ready state** with all core features implemente
 ## Future Work
 
 ### Short-term Improvements
+- [x] **Improve MCP tool descriptions and metadata for better user experience**
 - [ ] Add progress indicator for long-running conversions
 - [ ] Improve Windows compatibility
 - [x] **Enhance test coverage with integration tests**
