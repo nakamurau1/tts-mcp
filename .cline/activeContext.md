@@ -1,13 +1,16 @@
 # Active Context: tts-mcp
 
 ## Current Focus
-The current focus of the tts-mcp project is on maintaining a stable and reliable text-to-speech solution that works seamlessly both as a standalone CLI tool and as an MCP server integration for Claude Desktop and other MCP-compatible clients.
+The current focus of the tts-mcp project is on maintaining a stable and reliable text-to-speech solution that works seamlessly both as a standalone CLI tool and as an MCP server integration for Claude Desktop and other MCP-compatible clients. Additionally, improving test coverage and integration testing is a priority to ensure robust functionality.
 
 ## Recent Changes
 - Implementation of the MCP server functionality for Claude Desktop integration
 - Support for the latest OpenAI TTS models, including gpt-4o-mini-tts
 - Enhanced error handling and logging for better troubleshooting
 - Addition of various audio output formats (MP3, WAV, OPUS, AAC, FLAC, PCM)
+- **Added integration tests for MCP server and client-server interactions**
+- **Updated test environment to better handle async operations**
+- **Created test helpers for MCP server testing**
 
 ## Active Decisions
 
@@ -27,12 +30,20 @@ The current focus of the tts-mcp project is on maintaining a stable and reliable
 - Default values are provided for all options to minimize required configuration
 - Clear error messages include suggested resolutions
 
+### Testing Strategy
+- **Unit tests for core components and utilities**
+- **Integration tests for CLI functionality and MCP server operations**
+- **Environment variable-based control for running integration tests (`INTEGRATION_TEST=true`)**
+- **Graceful handling of API errors in test scenarios**
+- **Helper functions to standardize test setup and teardown**
+
 ## Next Steps
 
 ### Short-term Priorities
-1. **Documentation Improvements**: Enhance documentation for better user onboarding
-2. **Testing Coverage**: Increase test coverage for core functionality
+1. **Testing Coverage**: Continue to enhance integration tests and address test stability issues
+2. **Documentation Improvements**: Enhance documentation for better user onboarding
 3. **Error Handling Refinement**: Further improve error messages and recovery mechanisms
+4. **CI/CD Integration**: Set up automated testing in CI/CD pipeline
 
 ### Medium-term Goals
 1. **Batch Processing**: Add support for batch processing multiple text files
@@ -45,12 +56,14 @@ The current focus of the tts-mcp project is on maintaining a stable and reliable
 3. **Integration Expansion**: Support additional AI assistant platforms beyond Claude
 
 ## Current Challenges
-1. **API Limitations**: Working within the constraints of the OpenAI API (rate limits, text length, available voices)
-2. **Cross-Platform Compatibility**: Ensuring consistent experience across different operating systems
-3. **Audio Playback**: Handling various system configurations for audio playback
-4. **Security**: Balancing convenience with security for API key handling
+1. **Testing Environment**: Ensuring reliable and stable integration tests across different environments
+2. **API Limitations**: Working within the constraints of the OpenAI API (rate limits, text length, available voices)
+3. **Cross-Platform Compatibility**: Ensuring consistent experience across different operating systems
+4. **Audio Playback**: Handling various system configurations for audio playback
+5. **Security**: Balancing convenience with security for API key handling
 
 ## Integration Considerations
 - The MCP server needs to maintain compatibility with MCP protocol updates
 - Claude Desktop configuration requires clear documentation for end users
 - The CLI tool should maintain backward compatibility for existing scripts and workflows
+- Integration tests need to handle real-world API interactions gracefully

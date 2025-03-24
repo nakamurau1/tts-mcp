@@ -38,21 +38,37 @@ The project is in a **production-ready state** with all core features implemente
 - [x] Input validation and sanitization
 - [x] API error handling and reporting
 
+### Testing ✅
+- [x] Basic unit tests for core components
+- [x] API integration tests
+- [x] **MCP server startup integration tests**
+- [x] **MCP client-server interaction tests**
+- [x] **Test helper functions for MCP testing**
+- [x] **Robust error handling in test scenarios**
+- [ ] Comprehensive end-to-end tests
+- [ ] Automated cross-platform testing
+
 ## Known Issues
 - [ ] Potential path handling issues on Windows platforms
 - [ ] No progress indicator during long TTS generations
 - [ ] Limited feedback on API rate limiting or quota issues
+- [ ] **Integration tests may hang when not properly terminated**
+- [ ] **MCP client integration tests require proper environment setup**
 
 ## Testing Status
-- [x] Basic unit tests for core components
-- [x] API integration tests
-- [ ] Comprehensive end-to-end tests
-- [ ] Automated cross-platform testing
+- [x] Unit tests: ~85% coverage for utils.ts
+- [x] API tests: ~76% coverage for api.ts  
+- [x] MCP server tests: ~40% coverage (improved from baseline)
+- [x] **New integration tests for CLI functionality**
+- [x] **New integration tests for MCP server startup**
+- [x] **New integration tests for MCP client-server interactions**
+- [ ] index.ts tests (still needed)
 
 ## Documentation Status
 - [x] Installation instructions
 - [x] Basic usage documentation
 - [x] MCP server configuration guide
+- [x] **Test documentation and execution guide**
 - [ ] Advanced configuration documentation
 - [ ] Troubleshooting guide
 - [ ] API reference documentation
@@ -62,8 +78,9 @@ The project is in a **production-ready state** with all core features implemente
 ### Short-term Improvements
 - [ ] Add progress indicator for long-running conversions
 - [ ] Improve Windows compatibility
-- [ ] Enhance test coverage
+- [x] **Enhance test coverage with integration tests**
 - [ ] Add more comprehensive error codes and recovery suggestions
+- [ ] **Set up CI/CD pipeline for automated testing**
 
 ### Feature Backlog
 - [ ] Streaming audio output
@@ -81,3 +98,4 @@ The project is in a **production-ready state** with all core features implemente
 - [ ] Review and address potential security vulnerabilities
 - [ ] Optimize performance for large text inputs
 - [ ] Improve logging for better diagnostics
+- [x] **Improve test stability and reliability**
