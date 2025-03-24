@@ -185,10 +185,11 @@ async function createMcpServer(config: MCPServerConfig): Promise<McpServer> {
   // テキスト音声変換と再生ツールを追加
   server.tool(
     "text-to-speech",
+    "Converts text to speech and plays it using OpenAI's TTS API",
     {
-      text: z.string(),
-      speed: z.number().min(0.25).max(4.0).optional().default(1.0),
-      instructions: z.string().optional(),
+      text: z.string().describe("The text content to be converted to speech"),
+      speed: z.number().min(0.25).max(4.0).optional().default(1.0).describe("Speech speed factor (0.25 to 4.0, default: 1.0)"),
+      instructions: z.string().optional().describe("Optional instructions to guide the speech generation (e.g. emotions, style)"),
     },
     async (params) => {
       try {

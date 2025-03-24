@@ -80,14 +80,35 @@ console.log('Should run integration tests:', shouldRunIntegrationTests);
           
           // text-to-speechツールが正しいパラメータを持っているか確認
           const ttsTool = ttsTools[0];
+          // Log tool description if available
+          if ('description' in ttsTool) {
+            console.log('ツール説明:', ttsTool.description);
+            expect(typeof ttsTool.description).toBe('string');
+          }
+          
           if (ttsTool.arguments && Array.isArray(ttsTool.arguments)) {
             const textArg = ttsTool.arguments.find((arg: any) => arg && typeof arg === 'object' && 'name' in arg && arg.name === 'text');
             if (textArg) {
               console.log('textパラメータを検出しました:', textArg);
-              // textパラメータが必須かどうかをチェック
+              // Check for description and required fields
+              if ('description' in textArg) {
+                console.log('text parameter description:', textArg.description);
+                expect(typeof textArg.description).toBe('string');
+              }
               if ('required' in textArg) {
                 expect(textArg.required).toBe(true);
               }
+            }
+            
+            // Also check for other parameters (speed, instructions)
+            const speedArg = ttsTool.arguments.find((arg: any) => arg && typeof arg === 'object' && 'name' in arg && arg.name === 'speed');
+            if (speedArg && 'description' in speedArg) {
+              console.log('speed parameter description:', speedArg.description);
+            }
+            
+            const instructionsArg = ttsTool.arguments.find((arg: any) => arg && typeof arg === 'object' && 'name' in arg && arg.name === 'instructions');
+            if (instructionsArg && 'description' in instructionsArg) {
+              console.log('instructions parameter description:', instructionsArg.description);
             }
           }
         } else {
