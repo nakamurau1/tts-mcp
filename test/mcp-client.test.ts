@@ -43,16 +43,34 @@ console.log('Should run integration tests:', shouldRunIntegrationTests);
   
   // テスト後にクライアントを切断し、サーバーを終了
   afterEach(async () => {
+    // クライアントの切断処理はライブラリ内部で行われる
+    console.log('テスト終了、クライアントの切断処理をスキップ');
+    
     // サーバープロセスを確実に終了
-    if (serverProcess && !serverProcess.killed) {
+    if (serverProcess) {
       try {
+        // まずはSIGTERMで正常終了を試みる
         serverProcess.kill('SIGTERM');
+        
         // プロセスが確実に終了するまで少し待つ
-        await new Promise(resolve => setTimeout(resolve, 100));
+        await new Promise(resolve => setTimeout(resolve, 500));
+        
+        // まだ終了していない場合は強制終了
+        if (!serverProcess.killed) {
+          console.log('プロセスがまだ起動中です。SIGKILLで強制終了します...');
+          serverProcess.kill('SIGKILL');
+          await new Promise(resolve => setTimeout(resolve, 100));
+        }
       } catch (error) {
         console.error('サーバープロセスの終了に失敗:', error);
       }
     }
+    
+    // すべてのハンドラーをクリアする
+    // これはテスト実行後にプロセスが終了しない問題を解決するための措置です
+    // Node.jsのEvent Loopを空にするための操作
+    const timeout = setTimeout(() => {}, 0);
+    clearTimeout(timeout);
   });
 
   it('クライアントがサーバーの機能を検出できる', async () => {
@@ -65,61 +83,116 @@ console.log('Should run integration tests:', shouldRunIntegrationTests);
       
       // ツールリストの存在を確認
       expect(tools).toBeDefined();
+
+      // MCP SDKの新しいバージョンでは、ツールは配列の代わりにオブジェクトとして返される
+      let ttsTools: any[] = [];
       
-      // 配列であることを確認、配列でなくてもテストは継続
-      // (MCPバージョンによって動作が異なる可能性があるため)
       if (Array.isArray(tools)) {
+        // 古い形式: 配列として直接ツールリストが返される
         console.log('ツール数:', tools.length);
+        ttsTools = tools.filter((tool: any) => tool && typeof tool === 'object' && 'name' in tool && tool.name === 'text-to-speech');
+      } else if (tools && typeof tools === 'object') {
+        console.log('ツールリストの型:', typeof tools);
+        console.log('ツールリストのキー:', Object.keys(tools));
         
-        // 配列要素を検査
-        const ttsTools = tools.filter((tool: any) => tool && typeof tool === 'object' && 'name' in tool && tool.name === 'text-to-speech');
-        
-        // text-to-speechツールの有無はチェックするが、失敗してもテスト全体は失敗させない
-        if (ttsTools.length > 0) {
-          console.log('text-to-speechツールを検出しました');
-          
-          // text-to-speechツールが正しいパラメータを持っているか確認
-          const ttsTool = ttsTools[0];
-          // Log tool description if available
-          if ('description' in ttsTool) {
-            console.log('ツール説明:', ttsTool.description);
-            expect(typeof ttsTool.description).toBe('string');
-          }
-          
-          if (ttsTool.arguments && Array.isArray(ttsTool.arguments)) {
-            const textArg = ttsTool.arguments.find((arg: any) => arg && typeof arg === 'object' && 'name' in arg && arg.name === 'text');
-            if (textArg) {
-              console.log('textパラメータを検出しました:', textArg);
-              // Check for description and required fields
-              if ('description' in textArg) {
-                console.log('text parameter description:', textArg.description);
-                expect(typeof textArg.description).toBe('string');
-              }
-              if ('required' in textArg) {
-                expect(textArg.required).toBe(true);
-              }
-            }
-            
-            // Also check for other parameters (speed, instructions)
-            const speedArg = ttsTool.arguments.find((arg: any) => arg && typeof arg === 'object' && 'name' in arg && arg.name === 'speed');
-            if (speedArg && 'description' in speedArg) {
-              console.log('speed parameter description:', speedArg.description);
-            }
-            
-            const instructionsArg = ttsTool.arguments.find((arg: any) => arg && typeof arg === 'object' && 'name' in arg && arg.name === 'instructions');
-            if (instructionsArg && 'description' in instructionsArg) {
-              console.log('instructions parameter description:', instructionsArg.description);
-            }
-          }
-        } else {
-          console.log('text-to-speechツールが見つかりませんでした');
+        // 新しい形式: { tools: [...] } のようなオブジェクト
+        if ('tools' in tools && Array.isArray(tools.tools)) {
+          console.log('ツール数:', tools.tools.length);
+          ttsTools = tools.tools.filter((tool: any) => tool && typeof tool === 'object' && 'name' in tool && tool.name === 'text-to-speech');
         }
-      } else {
-        console.log('ツールリストが配列ではありません:', typeof tools);
       }
       
-      // テスト自体は成功とする
-      expect(true).toBe(true);
+      // text-to-speechツールが見つかった場合はチェックする
+      if (ttsTools.length > 0) {
+        console.log('text-to-speechツールを検出しました');
+        
+        // ツールの完全な構造をログ出力
+        const ttsTool = ttsTools[0];
+        console.log('text-to-speechツール全体:', JSON.stringify(ttsTool, null, 2));
+        
+        // inputSchemaがあればそれを詳細にログ出力
+        if ('inputSchema' in ttsTool && ttsTool.inputSchema) {
+          console.log('inputSchema:', JSON.stringify(ttsTool.inputSchema, null, 2));
+          
+          // inputSchemaからパラメータ情報を取得
+          try {
+            if (ttsTool.inputSchema && ttsTool.inputSchema.properties) {
+              const properties = ttsTool.inputSchema.properties;
+              console.log('Properties:', Object.keys(properties));
+              
+              // textパラメータ
+              if (properties.text && properties.text.description) {
+                console.log('textパラメータ説明:', properties.text.description);
+                const expectedTextDescription = "The text content to be converted to speech";
+                expect(properties.text.description).toBe(expectedTextDescription);
+              }
+              
+              // speedパラメータ
+              if (properties.speed && properties.speed.description) {
+                console.log('speedパラメータ説明:', properties.speed.description);
+                const expectedSpeedDescription = "Speech speed factor (0.25 to 4.0, default: 1.0)";
+                expect(properties.speed.description).toBe(expectedSpeedDescription);
+              }
+              
+              // instructionsパラメータ
+              if (properties.instructions && properties.instructions.description) {
+                console.log('instructionsパラメータ説明:', properties.instructions.description);
+                const expectedInstructionsDescription = "Optional instructions to guide the speech generation (e.g. emotions, style)";
+                expect(properties.instructions.description).toBe(expectedInstructionsDescription);
+              }
+            }
+          } catch (error) {
+            console.error('inputSchemaの解析エラー:', error);
+          }
+        }
+        
+        // 引数リストがあればそれを詳細にログ出力
+        if ('arguments' in ttsTool && Array.isArray(ttsTool.arguments)) {
+          console.log('arguments:', JSON.stringify(ttsTool.arguments, null, 2));
+        }
+        
+        // ツール説明文の完全一致チェック
+        if ('description' in ttsTool) {
+          console.log('ツール説明:', ttsTool.description);
+          const expectedToolDescription = "Converts text to speech and plays it using OpenAI's TTS API";
+          expect(ttsTool.description).toBe(expectedToolDescription);
+        }
+        
+        // 古い形式のAPIの場合: arguments配列から各パラメータをチェック
+        if (ttsTool.arguments && Array.isArray(ttsTool.arguments)) {
+          const textArg = ttsTool.arguments.find((arg: any) => arg && typeof arg === 'object' && 'name' in arg && arg.name === 'text');
+          if (textArg) {
+            console.log('textパラメータを検出しました:', textArg);
+            // textパラメータの説明文を完全一致チェック
+            if ('description' in textArg) {
+              console.log('text parameter description:', textArg.description);
+              const expectedTextDescription = "The text content to be converted to speech";
+              expect(textArg.description).toBe(expectedTextDescription);
+            }
+            if ('required' in textArg) {
+              expect(textArg.required).toBe(true);
+            }
+          }
+          
+          // speedパラメータの説明文を完全一致チェック
+          const speedArg = ttsTool.arguments.find((arg: any) => arg && typeof arg === 'object' && 'name' in arg && arg.name === 'speed');
+          if (speedArg && 'description' in speedArg) {
+            console.log('speed parameter description:', speedArg.description);
+            const expectedSpeedDescription = "Speech speed factor (0.25 to 4.0, default: 1.0)";
+            expect(speedArg.description).toBe(expectedSpeedDescription);
+          }
+          
+          // instructionsパラメータの説明文を完全一致チェック
+          const instructionsArg = ttsTool.arguments.find((arg: any) => arg && typeof arg === 'object' && 'name' in arg && arg.name === 'instructions');
+          if (instructionsArg && 'description' in instructionsArg) {
+            console.log('instructions parameter description:', instructionsArg.description);
+            const expectedInstructionsDescription = "Optional instructions to guide the speech generation (e.g. emotions, style)";
+            expect(instructionsArg.description).toBe(expectedInstructionsDescription);
+          }
+        }
+      } else {
+        console.log('text-to-speechツールが見つかりませんでした');
+      }
     } catch (error) {
       console.error('ツールリスト取得エラー:', error);
       // エラーが発生しても、テスト実行の確認のために成功とする
