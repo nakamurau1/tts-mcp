@@ -106,6 +106,7 @@ describe('mcp-server', () => {
       // toolメソッドが呼ばれたか検証
       expect(mockServerInstance.tool).toHaveBeenCalledWith(
         "text-to-speech",
+        expect.any(String), // Description string now included
         expect.any(Object),
         expect.any(Function)
       );

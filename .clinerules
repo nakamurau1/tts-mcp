@@ -1,0 +1,78 @@
+# tts-mcp Project Intelligence
+
+## Project Patterns
+
+### Code Style
+- TypeScript is used throughout the project
+- Japanese comments are used in the codebase
+- 2-space indentation is used for all files
+- Functions have JSDoc comments describing purpose and parameters
+- Error handling follows a consistent pattern of try/catch with detailed error messages
+
+### Naming Conventions
+- CamelCase for functions and variables
+- PascalCase for interfaces and types
+- Constants are defined in `src/constants.ts` and imported where needed
+- Types are defined in `src/types.ts` and imported where needed
+
+### Project Structure
+- Binary executables (CLI entry points) are in the `bin/` directory
+- Core implementation code is in the `src/` directory
+- Tests are in the `test/` directory and match their implementation file names
+- `.ts` files have matching `.d.ts` declaration files
+
+## Operational Guidelines
+
+### Development Workflow
+- Changes should maintain backward compatibility where possible
+- Input validation should be performed before any API calls
+- New features should include corresponding tests
+- Error messages should be clear and include suggested resolution steps
+
+### API Integration
+- OpenAI API key should be handled securely, preferring environment variables
+- Default values should be provided for all configurable options
+- All user inputs should be validated before being passed to external APIs
+- API errors should be captured and reported with detailed information
+
+### MCP Server Specifics
+- The MCP server uses stdio for communication
+- Temporary files should be cleaned up after use, even in error scenarios
+- Logging is used for troubleshooting and should be comprehensive
+- The server should gracefully handle various error conditions
+
+## Common Development Tasks
+
+### Adding a New Voice
+1. Add the voice name to the `VALID_VOICES` array in `src/constants.ts`
+2. Update tests if needed to cover the new voice option
+3. No other changes needed as the code dynamically supports all voices in the array
+
+### Adding a New Model
+1. Add the model name to the `VALID_MODELS` array in `src/constants.ts`
+2. Update tests if needed to cover the new model option
+3. Update documentation to mention the new model
+
+### Adding a New Output Format
+1. Add the format to the `VALID_FORMATS` array in `src/constants.ts`
+2. Ensure that OpenAI API supports the format
+3. Update tests and documentation accordingly
+
+## Troubleshooting Guidelines
+
+### Common Issues
+1. **API Key Issues**: Check environment variables or command line arguments
+2. **File Permission Errors**: Ensure write permissions for output directory
+3. **Audio Playback Errors**: May be system-specific, check audio configuration
+4. **MCP Integration Issues**: Verify Claude Desktop configuration
+
+### Logging
+- The MCP server logs to a file specified in configuration or default location
+- Log files follow the format: timestamp - message
+- Log files provide valuable context for debugging issues
+
+## Performance Considerations
+- Text-to-speech conversion time scales with input text length
+- Memory usage primarily depends on audio file size
+- Temporary files are used for playback and should be cleaned up
+- Error handling should always clean up temporary resources
