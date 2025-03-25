@@ -19,45 +19,44 @@ export async function startMcpServer(options: {
   format?: string;
 } = {}): Promise<ChildProcess> {
   const serverPath = path.join(__dirname, '../../dist/bin/tts-mcp-server.js');
-  
+
   // コマンドライン引数を構築
   const args = [serverPath];
-  
+
   if (options.voice) {
     args.push('--voice', options.voice);
   }
-  
+
   if (options.model) {
     args.push('--model', options.model);
   }
-  
+
   if (options.format) {
     args.push('--format', options.format);
   }
-  
+
   // 環境変数を設定
   const env = {
     ...process.env,
     OPENAI_API_KEY: options.apiKey || process.env.OPENAI_API_KEY || 'dummy_key_for_test'
   };
-  
+
   // サーバープロセスを起動
   const serverProcess = spawn('node', args, { env });
-  
+
   // エラー処理
   serverProcess.on('error', (error) => {
     console.error('サーバープロセスエラー:', error);
   });
-  
+
   // プロセスの標準エラー出力をキャプチャ（デバッグ用）
-  let stderrData = '';
   serverProcess.stderr.on('data', (data) => {
-    stderrData += data.toString();
+    console.error('Server stderr:', data.toString());
   });
-  
+
   // サーバーが起動するのを少し待つ
   await new Promise(resolve => setTimeout(resolve, 1000));
-  
+
   return serverProcess;
 }
 
@@ -76,41 +75,41 @@ export async function createMcpClient(options: {
   format?: string;
 } = {}): Promise<Client> {
   const serverPath = path.join(__dirname, '../../dist/bin/tts-mcp-server.js');
-  
+
   // コマンドライン引数を構築
   const args = [serverPath];
-  
+
   if (options.voice) {
     args.push('--voice', options.voice);
   }
-  
+
   if (options.model) {
     args.push('--model', options.model);
   }
-  
+
   if (options.format) {
     args.push('--format', options.format);
   }
-  
+
   // 環境変数を設定
   const env = {
     ...process.env,
     OPENAI_API_KEY: options.apiKey || process.env.OPENAI_API_KEY || 'dummy_key_for_test'
   };
-  
+
   // トランスポートを作成
   const transport = new StdioClientTransport({
     command: 'node',
     args,
     env
   });
-  
+
   // クライアントを作成
   const client = new Client(
     { name: 'test-client', version: '1.0.0' },
     { capabilities: { tools: {} } }
   );
-  
+
   // 接続
   try {
     await client.connect(transport);
